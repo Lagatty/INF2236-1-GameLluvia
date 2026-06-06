@@ -60,8 +60,10 @@ public class Gato {
 	
 	public void comerSaludable() {
 	    // La comida saludable estabiliza el peso quemando un poquito o manteniéndolo
-	    if (peso > 4.0f) {
-	        peso -= 0.1f; // Si está gordito, baja gradualmente
+	    if (peso <= 4.0f) {
+	        peso -= 0.1f; // Si está sano, baja gradualmente
+	    } else {
+	    	peso -= 0.3; // Si está más gordo baja más rapido
 	    }
 	    sumarPuntos(10); // Te da el puntaje normal del juego
 	}

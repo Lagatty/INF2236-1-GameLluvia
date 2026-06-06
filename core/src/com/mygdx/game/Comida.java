@@ -29,13 +29,13 @@ public class Comida {
 	public void crear() {
 		rainDropsPos = new Array<Rectangle>();
 		rainDropsType = new Array<Integer>();
-		crearGotaDeLluvia();
+		crearComida();
 	      // start the playback of the background music immediately
 	      rainMusic.setLooping(true);
 	      rainMusic.play();
 	}
 	
-	private void crearGotaDeLluvia() {
+	private void crearComida() {
 	      Rectangle raindrop = new Rectangle();
 	      raindrop.x = MathUtils.random(0, 800-64);
 	      raindrop.y = 480;
@@ -52,10 +52,10 @@ public class Comida {
 	
    public void actualizarMovimiento(Gato gato) { 
 	   // generar gotas de lluvia 
-	   if(TimeUtils.nanoTime() - lastDropTime > 100000000) crearGotaDeLluvia();
+	   if(TimeUtils.nanoTime() - lastDropTime > 100000000) crearComida();
 	  
 	   
-	   // revisar si las gotas cayeron al suelo o chocaron con el tarro
+	   // revisar si la comida cayó al suelo o chocaron con el gato
 	   for (int i=0; i < rainDropsPos.size; i++ ) {
 		  Rectangle raindrop = rainDropsPos.get(i);
 	      raindrop.y -= 300 * Gdx.graphics.getDeltaTime();
@@ -64,14 +64,14 @@ public class Comida {
 	    	  rainDropsPos.removeIndex(i); 
 	    	  rainDropsType.removeIndex(i);
 	      }
-	      if(raindrop.overlaps(gato.getArea())) { //la gota choca con el tarro
-	    	if(rainDropsType.get(i)==1) { // gota daÃ±ina
+	      if(raindrop.overlaps(gato.getArea())) { //la comida choca con el gato
+	    	if(rainDropsType.get(i)==1) { // comida danina
 	    	  gato.danar();
 	    	  
 	    	  rainDropsPos.removeIndex(i);
 	          rainDropsType.removeIndex(i);
-	      	}else { // gota a recolectar
-	    	  gato.sumarPuntos(10);
+	      	}else { // comida saludable
+	    	  gato.comerSaludable();
 	          dropSound.play();
 	          rainDropsPos.removeIndex(i);
 	          rainDropsType.removeIndex(i);
