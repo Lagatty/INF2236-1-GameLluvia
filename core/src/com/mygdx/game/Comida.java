@@ -17,10 +17,10 @@ public class Comida {
     private Texture gotaBuena;
     private Texture gotaMala;
     private Sound dropSound;
-    private Music rainMusic;
+    private Music stableMusic;
 	   
 	public Comida(Texture gotaBuena, Texture gotaMala, Sound ss, Music mm) {
-		rainMusic = mm;
+		stableMusic = mm;
 		dropSound = ss;
 		this.gotaBuena = gotaBuena;
 		this.gotaMala = gotaMala;
@@ -31,15 +31,15 @@ public class Comida {
 		rainDropsType = new Array<Integer>();
 		crearComida();
 	      // start the playback of the background music immediately
-	      rainMusic.setLooping(true);
-	      rainMusic.play();
+	      stableMusic.setLooping(true);
+	      stableMusic.play();
 	}
 	
 	public void reiniciar() {
 	    //Limpiar arreglo de comida
 	    rainDropsPos.clear(); 
 	    // Vuelve a iniciar la música si se detuvo
-	    rainMusic.play(); 
+	    stableMusic.play(); 
 	}
 	
 	private void crearComida() {
@@ -99,7 +99,7 @@ public class Comida {
    }
    public void destruir() {
 	      dropSound.dispose();
-	      rainMusic.dispose();
+	      stableMusic.dispose();
    }
    
 }

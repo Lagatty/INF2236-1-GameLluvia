@@ -114,7 +114,7 @@ public class Gato {
 	    Animation<TextureRegion> animacionActiva;
 	    if (peso < 3.5f) {
 	        animacionActiva = animDelgado;
-	    } else if (peso <= 5.5f) {
+	    } else if (peso <= 6.5f) {
 	        animacionActiva = animNormal;
 	    } else {
 	        animacionActiva = animGordo;
