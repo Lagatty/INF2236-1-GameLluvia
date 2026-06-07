@@ -35,6 +35,13 @@ public class Comida {
 	      rainMusic.play();
 	}
 	
+	public void reiniciar() {
+	    //Limpiar arreglo de comida
+	    rainDropsPos.clear(); 
+	    // Vuelve a iniciar la música si se detuvo
+	    rainMusic.play(); 
+	}
+	
 	private void crearComida() {
 	      Rectangle raindrop = new Rectangle();
 	      raindrop.x = MathUtils.random(0, 800-64);
