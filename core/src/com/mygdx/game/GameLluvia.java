@@ -5,10 +5,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color; 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer; 
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType; 
+import com.badlogic.gdx.math.Rectangle; 
+import com.badlogic.gdx.math.Vector3; 
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class GameLluvia extends ApplicationAdapter {
@@ -25,6 +30,13 @@ public class GameLluvia extends ApplicationAdapter {
 	
 	private Texture texGatoInfarto;
 	private Texture texGatoEsqueleto;
+	private BitmapFont fontTitulo;
+	
+	private ShapeRenderer shapeRenderer; 
+	
+	private Rectangle btnJugar;
+	private Rectangle btnCreditos;
+	private Rectangle btnSalir;
 	
 	// --- CONTROL DE PANTALLAS EXPRESS ---
 	// 0: Menú de Inicio, 1: Jugando, 2: Créditos
@@ -33,6 +45,19 @@ public class GameLluvia extends ApplicationAdapter {
 	@Override
 	public void create () {
 		font = new BitmapFont(); 
+		font.getData().setScale(1.2f); 
+		font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+		
+		fontTitulo = new BitmapFont();
+		fontTitulo.getData().setScale(2.5f); 
+		fontTitulo.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+		
+		shapeRenderer = new ShapeRenderer();
+		
+		// --- ZONAS DE LOS BOTONES --- (X, Y, Ancho, Alto)
+		btnJugar = new Rectangle(800/2 - 100, 250, 200, 40);
+		btnCreditos = new Rectangle(800/2 - 100, 180, 200, 40);
+		btnSalir = new Rectangle(800/2 - 100, 110, 200, 40);
 		
 		Sound hurtSound = Gdx.audio.newSound(Gdx.files.internal("hurt.ogg"));
 		Texture gatoFlaco = new Texture(Gdx.files.internal("FlacoCatSmoking.png"));
@@ -40,7 +65,6 @@ public class GameLluvia extends ApplicationAdapter {
 		Texture gatoGordo = new Texture(Gdx.files.internal("GordoCatEating.png"));
           
 		gato = new Gato(gatoFlaco, gatoNormal, gatoGordo, hurtSound);
-		
 		
 		texGatoInfarto = new Texture(Gdx.files.internal("death_heart_attack.png"));
 		texGatoEsqueleto = new Texture(Gdx.files.internal("death_malnutrition.png")); 
@@ -74,27 +98,42 @@ public class GameLluvia extends ApplicationAdapter {
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 		
-		// --- ESTADO 0: MENÚ DE INICIO ---
+		// --- ESTADO 0: MENÚ DE INICIO CON BOTONES DIBUJADOS ---
 		if (estadoPantalla == 0) {
 			if (!stableMusic.isPlaying()) stableMusic.play();
 			
+			// Primero dibujamos los botones de fondo (ShapeRenderer)
+			shapeRenderer.setProjectionMatrix(camera.combined);
+			shapeRenderer.begin(ShapeType.Filled);
+			shapeRenderer.setColor(Color.DARK_GRAY);
+			shapeRenderer.rect(btnJugar.x, btnJugar.y, btnJugar.width, btnJugar.height);
+			shapeRenderer.rect(btnCreditos.x, btnCreditos.y, btnCreditos.width, btnCreditos.height);
+			shapeRenderer.rect(btnSalir.x, btnSalir.y, btnSalir.width, btnSalir.height);
+			shapeRenderer.end();
+			
+			// Después dibujamos las letras encima (SpriteBatch)
 			batch.begin();
-			font.draw(batch, "¡SALVA AL GATO SALUDABLE!", 320, 350);
-			font.draw(batch, "1. Comenzar Juego", 340, 260);
-			font.draw(batch, "2. Ver Créditos", 340, 220);
-			font.draw(batch, "3. Salir del Juego", 340, 180);
+			fontTitulo.draw(batch, "¡SALVA  AL GATO SALUDABLE!", 180, 400); 
+			font.draw(batch, "Comenzar Juego", btnJugar.x + 25, btnJugar.y + 28);
+			font.draw(batch, "Ver Creditos", btnCreditos.x + 40, btnCreditos.y + 28);
+			font.draw(batch, "Salir del Juego", btnSalir.x + 35, btnSalir.y + 28);
 			batch.end();
 			
-			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
-				gato.reiniciar();
-				comida.reiniciar();
-				estadoPantalla = 1;
-			}
-			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
-				estadoPantalla = 2;
-			}
-			if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
-				Gdx.app.exit(); 
+			// Lógica del clic del Mouse
+			if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+				Vector3 touchPos = new Vector3();
+				touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+				camera.unproject(touchPos); 
+				
+				if (btnJugar.contains(touchPos.x, touchPos.y)) {
+					gato.reiniciar();
+					comida.reiniciar();
+					estadoPantalla = 1;
+				} else if (btnCreditos.contains(touchPos.x, touchPos.y)) {
+					estadoPantalla = 2;
+				} else if (btnSalir.contains(touchPos.x, touchPos.y)) {
+					Gdx.app.exit();
+				}
 			}
 			return;
 		}
@@ -102,10 +141,10 @@ public class GameLluvia extends ApplicationAdapter {
 		// --- ESTADO 2: PANTALLA DE CRÉDITOS ---
 		if (estadoPantalla == 2) {
 			batch.begin();
-			font.draw(batch, "--- CRÉDITOS DEL PROYECTO ---", 290, 320);
-			font.draw(batch, "Desarrollado por: Pablo Alvarez / Francisco Gatica", 280, 260);
-			font.draw(batch, "Asignatura: Programación Avanzada - PUCV", 270, 220);
-			font.draw(batch, "Presiona ESC para volver al menú", 300, 120);
+			font.draw(batch, "--- CRÉDITOS DEL PROYECTO ---", 260, 320);
+			font.draw(batch, "Desarrollado por: Pablo Alvarez / Francisco Gatica", 190, 260);
+			font.draw(batch, "Asignatura: Programación Avanzada - PUCV", 220, 220);
+			font.draw(batch, "Presiona ESC para volver al menú", 250, 120);
 			batch.end();
 			
 			if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
@@ -125,13 +164,13 @@ public class GameLluvia extends ApplicationAdapter {
 			}
 			
 			batch.begin();
-			font.draw(batch, "Presiona ENTER para volver al Menú Inicial", 280, 80);
-			
+			font.draw(batch, "Presiona ENTER para volver al Menu", 280, 80);
+
 			if (gato.getCausaMuerte().equals("Infarto")) {
-				font.draw(batch, "¡GAME OVER! Tu gato sufrió un infarto por sobrepeso.", 240, 420);
+				fontTitulo.draw(batch, "¡INFARTO POR SOBREPESO!", 200, 430);
 				batch.draw(texGatoInfarto, 800/2 - 128/2, 480/2 - 128/2, 128, 128);
 			} else if (gato.getCausaMuerte().equals("Desnutricion")) {
-				font.draw(batch, "¡GAME OVER! Tu gato murió de desnutrición.", 250, 420);
+				fontTitulo.draw(batch, "¡MURIO DE DESNUTRICION!", 200, 430);
 				batch.draw(texGatoEsqueleto, 800/2 - 128/2, 480/2 - 128/2, 128, 128);
 			}
 			batch.end();
@@ -160,14 +199,36 @@ public class GameLluvia extends ApplicationAdapter {
 			stableMusic.play();
 		}
 		
-		// DIBUJAR JUEGO ACTIVO
+		// DIBUJAR JUEGO ACTIVO (Imágenes)
 		batch.begin();
 		font.draw(batch, "Puntaje total: " + gato.getPuntos(), 5, 475);
-		font.draw(batch, String.format("Peso Gato : %.2f kg", gato.getPeso()), 650, 475);
+		font.draw(batch, String.format("Peso Gato : %.2f kg", gato.getPeso()), 350, 475);
 		
 		gato.dibujar(batch);
 		comida.actualizarDibujoLluvia(batch);
 		batch.end();
+
+		// DIBUJAR LA BARRA DE SALUD AL FINAL (Figuras)
+		shapeRenderer.setProjectionMatrix(camera.combined);
+		shapeRenderer.begin(ShapeType.Filled);
+		shapeRenderer.setColor(Color.DARK_GRAY);
+		shapeRenderer.rect(550, 460, 200, 15);
+		
+		float pesoActual = gato.getPeso();
+		if (pesoActual <= 3.5f || pesoActual >= 6.5f) {
+			shapeRenderer.setColor(Color.RED); 
+		} else if (pesoActual <= 4.5f && pesoActual >= 3.5f) {
+			shapeRenderer.setColor(Color.YELLOW); 
+		} else {
+			shapeRenderer.setColor(Color.GREEN); 
+		}
+		
+		float anchoBarra = ((pesoActual - 2.5f) / 5.5f) * 200;
+		if (anchoBarra < 0) anchoBarra = 0;
+		if (anchoBarra > 200) anchoBarra = 200;
+		
+		shapeRenderer.rect(550, 460, anchoBarra, 15);
+		shapeRenderer.end();
 	}
 	
 	@Override
@@ -181,5 +242,7 @@ public class GameLluvia extends ApplicationAdapter {
 		stableMusic.dispose();
 		warningMusic.dispose();
 		deathSound.dispose();
+		fontTitulo.dispose();
+		shapeRenderer.dispose();
 	}
 }

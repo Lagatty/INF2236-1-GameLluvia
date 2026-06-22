@@ -104,7 +104,7 @@ public class Gato {
 	
 	public void comerSaludable() {
 	    if (peso <= 4.0f) {
-	        peso -= 0.1f; // Puede empezar a volverse flaco si abusa de lo saludable
+	        peso -= 0.1f; 
 	    } else {
 	    	peso -= 0.3f; 
 	    }
@@ -125,7 +125,7 @@ public class Gato {
 	    
 	    TextureRegion frameActual = animacionActiva.getKeyFrame(stateTime, true);
 
-	    // NUEVO: Agregamos hitBox.width y hitBox.height como parámetros
+	    // Agregamos hitBox.width y hitBox.height como parámetros
 	    if (!herido) {
 	        batch.draw(frameActual, hitBox.x, hitBox.y, hitBox.width, hitBox.height);
 	    } else {
@@ -163,7 +163,6 @@ public class Gato {
    }
    
 	public void destruir() {
-		// IMPORTANTE: Liberar las 3 texturas de la memoria
 		texDelgado.dispose();
 		texNormal.dispose();
 		texGordo.dispose();

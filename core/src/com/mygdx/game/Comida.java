@@ -91,7 +91,7 @@ public class Comida {
 	   
 	  for (int i=0; i < rainDropsPos.size; i++ ) {
 		  Rectangle raindrop = rainDropsPos.get(i);
-		  if(rainDropsType.get(i)==1) // gota dañina
+		  if(rainDropsType.get(i)==1) // gota danina
 	         batch.draw(gotaMala, raindrop.x, raindrop.y); 
 		  else
 			 batch.draw(gotaBuena, raindrop.x, raindrop.y); 
