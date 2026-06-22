@@ -19,6 +19,7 @@ public class Gato {
 	private boolean herido = false; 
 	private int tiempoHeridoMax = 50;
 	private int tiempoHerido;
+	private String causaMuerte = "Ninguna";
 
 	// --- ATRIBUTOS DE PESO ---
 	private float peso = 4.0f;          // Parte en 4.0 kg (Estado Normal)
@@ -95,6 +96,8 @@ public class Gato {
 	    this.peso = 4.0f;     // Vuelve al peso normal
 	    this.puntos = 0;      // Reinicia el contador
 	    this.herido = false;  // Quita el estado de daño
+	    causaMuerte = "Ninguna";
+	    stateTime = 0f;
 	    crear();              // Reposiciona al gato en el centro
 	}
 	
@@ -134,7 +137,21 @@ public class Gato {
 	}
 	   
 	public boolean estaMuerto() {
-	    return (peso >= PESO_MAX || peso <= PESO_MIN);
+		if (peso >= PESO_MAX) {
+	        causaMuerte = "Infarto";
+	        return true;
+	    }
+	    if (peso <= PESO_MIN) {
+	        causaMuerte = "Desnutricion";
+	        return true;
+	    }
+	    
+	    causaMuerte = "Ninguna";
+	    return false;
+	}
+	
+	public String getCausaMuerte() {
+	    return causaMuerte;
 	}
 	
 	public void actualizarMovimiento() { 
